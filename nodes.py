@@ -1,3 +1,4 @@
+import math
 import os
 import uuid
 import numpy as np
@@ -196,8 +197,11 @@ class MAIFrameCanvasRecut:
     CATEGORY = "mAI/video"
     OUTPUT_NODE = True
 
+    def _ceil_dimension(self, value):
+        return max(1, int(math.ceil(float(value))))
+
     def _ceil_to_multiple(self, value, multiple):
-        value = max(1, int(round(value)))
+        value = self._ceil_dimension(value)
         multiple = max(1, int(multiple))
         return ((value + multiple - 1) // multiple) * multiple
 
@@ -222,15 +226,15 @@ class MAIFrameCanvasRecut:
         max_height,
         padding_strategy,
     ):
-        canvas_w = max(1, int(canvas_w))
-        canvas_h = max(1, int(canvas_h))
-        target_w = max(1, int(target_w))
-        target_h = max(1, int(target_h))
-        processing_multiple = max(1, int(processing_multiple))
-        min_width = max(1, int(min_width))
-        min_height = max(1, int(min_height))
-        max_width = max(1, int(max_width))
-        max_height = max(1, int(max_height))
+        canvas_w = self._ceil_dimension(canvas_w)
+        canvas_h = self._ceil_dimension(canvas_h)
+        target_w = self._ceil_dimension(target_w)
+        target_h = self._ceil_dimension(target_h)
+        processing_multiple = self._ceil_dimension(processing_multiple)
+        min_width = self._ceil_dimension(min_width)
+        min_height = self._ceil_dimension(min_height)
+        max_width = self._ceil_dimension(max_width)
+        max_height = self._ceil_dimension(max_height)
 
         max_aligned_w = self._floor_to_multiple(max_width, processing_multiple)
         max_aligned_h = self._floor_to_multiple(max_height, processing_multiple)
@@ -241,10 +245,10 @@ class MAIFrameCanvasRecut:
             max_aligned_h / max(1, canvas_h),
         )
 
-        safe_canvas_w = max(1, int(round(canvas_w * scale)))
-        safe_canvas_h = max(1, int(round(canvas_h * scale)))
-        safe_target_w = max(1, int(round(target_w * scale)))
-        safe_target_h = max(1, int(round(target_h * scale)))
+        safe_canvas_w = self._ceil_dimension(canvas_w * scale)
+        safe_canvas_h = self._ceil_dimension(canvas_h * scale)
+        safe_target_w = self._ceil_dimension(target_w * scale)
+        safe_target_h = self._ceil_dimension(target_h * scale)
         safe_x_offset = int(round(x_offset * scale))
         safe_y_offset = int(round(y_offset * scale))
 
@@ -256,10 +260,10 @@ class MAIFrameCanvasRecut:
         # If min/max are contradictory, keep the aligned max and scale the composition down again.
         if safe_canvas_w > processing_w or safe_canvas_h > processing_h:
             scale2 = min(processing_w / safe_canvas_w, processing_h / safe_canvas_h)
-            safe_canvas_w = max(1, int(round(safe_canvas_w * scale2)))
-            safe_canvas_h = max(1, int(round(safe_canvas_h * scale2)))
-            safe_target_w = max(1, int(round(safe_target_w * scale2)))
-            safe_target_h = max(1, int(round(safe_target_h * scale2)))
+            safe_canvas_w = self._ceil_dimension(safe_canvas_w * scale2)
+            safe_canvas_h = self._ceil_dimension(safe_canvas_h * scale2)
+            safe_target_w = self._ceil_dimension(safe_target_w * scale2)
+            safe_target_h = self._ceil_dimension(safe_target_h * scale2)
             safe_x_offset = int(round(safe_x_offset * scale2))
             safe_y_offset = int(round(safe_y_offset * scale2))
             scale *= scale2
@@ -306,7 +310,7 @@ class MAIFrameCanvasRecut:
         }
 
     def _get_resized_size(self, target_w, target_h):
-        return max(1, int(target_w)), max(1, int(target_h))
+        return self._ceil_dimension(target_w), self._ceil_dimension(target_h)
 
     def _anchor_position(
         self,
@@ -607,18 +611,18 @@ class MAIFrameCanvasRecut:
         batch, src_h, src_w, channels = frames.shape
 
         layout = self._get_processing_layout(
-            canvas_w=int(canvas_width),
-            canvas_h=int(canvas_height),
-            target_w=int(target_width),
-            target_h=int(target_height),
+            canvas_w=canvas_width,
+            canvas_h=canvas_height,
+            target_w=target_width,
+            target_h=target_height,
             x_offset=int(x_offset),
             y_offset=int(y_offset),
             anchor=anchor,
-            processing_multiple=int(processing_multiple),
-            min_width=int(min_width),
-            min_height=int(min_height),
-            max_width=int(max_width),
-            max_height=int(max_height),
+            processing_multiple=processing_multiple,
+            min_width=min_width,
+            min_height=min_height,
+            max_width=max_width,
+            max_height=max_height,
             padding_strategy=padding_strategy,
         )
 
@@ -732,8 +736,8 @@ class MAIFrameCanvasRecut:
                 canvas,
                 preview,
                 mask,
-                int(canvas_width),
-                int(canvas_height),
+                self._ceil_dimension(canvas_width),
+                self._ceil_dimension(canvas_height),
                 int(canvas_w),
                 int(canvas_h),
                 int(content_x),

@@ -2,17 +2,21 @@ import { MIN_FRAME_SIZE } from "./constants.js";
 import { clamp, getPoint, getValue, setValue } from "./utils.js";
 import { findHandle, getAnchorBase, getCanvasInfo, pointInsideRect, previewPointToCanvas, rectsIntersect } from "./geometry.js";
 
+function ceilFrameSize(value) {
+    return Math.max(MIN_FRAME_SIZE, Math.ceil(Number(value)));
+}
+
 function applyTargetTransform(node, info, newPasteX, newPasteY, newW, newH) {
-    newW = Math.max(MIN_FRAME_SIZE, Math.round(newW));
-    newH = Math.max(MIN_FRAME_SIZE, Math.round(newH));
+    newW = ceilFrameSize(newW);
+    newH = ceilFrameSize(newH);
 
     const safeScale = info.scaleFactor || 1;
     const localPasteX = newPasteX - (info.contentX || 0);
     const localPasteY = newPasteY - (info.contentY || 0);
     const base = getAnchorBase(node, info.contentW, info.contentH, newW, newH);
 
-    setValue(node, "target_width", Math.max(MIN_FRAME_SIZE, Math.round(newW / safeScale)));
-    setValue(node, "target_height", Math.max(MIN_FRAME_SIZE, Math.round(newH / safeScale)));
+    setValue(node, "target_width", ceilFrameSize(newW / safeScale));
+    setValue(node, "target_height", ceilFrameSize(newH / safeScale));
     setValue(node, "x_offset", Math.round((localPasteX - base.x) / safeScale));
     setValue(node, "y_offset", Math.round((localPasteY - base.y) / safeScale));
 }

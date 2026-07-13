@@ -25,6 +25,8 @@ Main controls:
 - `background_r/g/b`: background color visible where the frame does not cover the canvas
 - `resize_algorithm`: resize method
 
+When canvas or frame sizes are recalculated from scaling, multiples, dragging, or zooming, fractional sizes are rounded up so the result does not undershoot the requested size. Hard `max_width` and `max_height` limits can still force the processing layout smaller.
+
 Frontend preview:
 - Blue outline: requested content canvas inside the larger processing canvas
 - White outline: frame/image bounding box
@@ -37,8 +39,9 @@ Outputs:
 - `recut_frames`: full recut frame batch on the processing canvas
 - `preview_first_frame`: first frame only, useful for connecting to a normal ComfyUI Preview Image node
 - `extended_area_mask`: mask frame sequence, repeated to match the input batch
-- `actual_canvas_width`, `actual_canvas_height`: final processing canvas size
-- `content_x`, `content_y`, `content_width`, `content_height`: position and size of the requested content canvas inside the processing canvas. Use this metadata later to crop away padding.
+- `final_canvas_width`, `final_canvas_height`: exact requested canvas size
+- `processing_canvas_width`, `processing_canvas_height`: final processing canvas size
+- `crop_x`, `crop_y`, `crop_width`, `crop_height`: position and size of the requested content canvas inside the processing canvas. Use this metadata later to crop away padding.
 
 ## Install
 

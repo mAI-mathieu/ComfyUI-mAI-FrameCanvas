@@ -2,9 +2,13 @@ import { app } from "../../../scripts/app.js";
 import { HANDLE_SIZE } from "./constants.js";
 import { getValue } from "./utils.js";
 
+function ceilDimension(value) {
+    return Math.max(1, Math.ceil(Number(value)));
+}
+
 function ceilToMultiple(value, multiple) {
-    value = Math.max(1, Math.round(Number(value)));
-    multiple = Math.max(1, Math.round(Number(multiple)));
+    value = ceilDimension(value);
+    multiple = ceilDimension(multiple);
     return Math.ceil(value / multiple) * multiple;
 }
 
@@ -17,7 +21,7 @@ function floorToMultiple(value, multiple) {
 export function getTargetSize(node, canvasW, canvasH) {
     const targetW = Number(getValue(node, "target_width", canvasW));
     const targetH = Number(getValue(node, "target_height", canvasH));
-    return { w: Math.max(1, Math.round(targetW)), h: Math.max(1, Math.round(targetH)) };
+    return { w: ceilDimension(targetW), h: ceilDimension(targetH) };
 }
 
 export function getAnchorBase(node, canvasW, canvasH, frameW, frameH) {
@@ -32,15 +36,15 @@ export function getAnchorBase(node, canvasW, canvasH, frameW, frameH) {
 
 export function getProcessingLayout(node, requestedCanvasW, requestedCanvasH) {
     const anchor = getValue(node, "anchor", "top_left");
-    const multiple = Math.max(1, Math.round(Number(getValue(node, "processing_multiple", 32))));
-    const minW = Math.max(1, Math.round(Number(getValue(node, "min_width", 512))));
-    const minH = Math.max(1, Math.round(Number(getValue(node, "min_height", 512))));
-    const maxW = Math.max(1, Math.round(Number(getValue(node, "max_width", 2048))));
-    const maxH = Math.max(1, Math.round(Number(getValue(node, "max_height", 2048))));
+    const multiple = ceilDimension(getValue(node, "processing_multiple", 32));
+    const minW = ceilDimension(getValue(node, "min_width", 512));
+    const minH = ceilDimension(getValue(node, "min_height", 512));
+    const maxW = ceilDimension(getValue(node, "max_width", 2048));
+    const maxH = ceilDimension(getValue(node, "max_height", 2048));
     const paddingStrategy = getValue(node, "padding_strategy", "centered");
 
-    let contentW = Math.max(1, Math.round(requestedCanvasW));
-    let contentH = Math.max(1, Math.round(requestedCanvasH));
+    let contentW = ceilDimension(requestedCanvasW);
+    let contentH = ceilDimension(requestedCanvasH);
     let target = getTargetSize(node, contentW, contentH);
     let xOffset = Math.round(Number(getValue(node, "x_offset", 0)));
     let yOffset = Math.round(Number(getValue(node, "y_offset", 0)));
@@ -49,9 +53,9 @@ export function getProcessingLayout(node, requestedCanvasW, requestedCanvasH) {
     const maxAlignedH = floorToMultiple(maxH, multiple);
     let scale = Math.min(1.0, maxAlignedW / contentW, maxAlignedH / contentH);
 
-    contentW = Math.max(1, Math.round(contentW * scale));
-    contentH = Math.max(1, Math.round(contentH * scale));
-    target = { w: Math.max(1, Math.round(target.w * scale)), h: Math.max(1, Math.round(target.h * scale)) };
+    contentW = ceilDimension(contentW * scale);
+    contentH = ceilDimension(contentH * scale);
+    target = { w: ceilDimension(target.w * scale), h: ceilDimension(target.h * scale) };
     xOffset = Math.round(xOffset * scale);
     yOffset = Math.round(yOffset * scale);
 
@@ -62,9 +66,9 @@ export function getProcessingLayout(node, requestedCanvasW, requestedCanvasH) {
 
     if (contentW > processingW || contentH > processingH) {
         const scale2 = Math.min(processingW / contentW, processingH / contentH);
-        contentW = Math.max(1, Math.round(contentW * scale2));
-        contentH = Math.max(1, Math.round(contentH * scale2));
-        target = { w: Math.max(1, Math.round(target.w * scale2)), h: Math.max(1, Math.round(target.h * scale2)) };
+        contentW = ceilDimension(contentW * scale2);
+        contentH = ceilDimension(contentH * scale2);
+        target = { w: ceilDimension(target.w * scale2), h: ceilDimension(target.h * scale2) };
         xOffset = Math.round(xOffset * scale2);
         yOffset = Math.round(yOffset * scale2);
         scale *= scale2;
@@ -100,8 +104,8 @@ export function getProcessingLayout(node, requestedCanvasW, requestedCanvasH) {
 }
 
 export function getCanvasInfo(node, image) {
-    const requestedCanvasW = Math.max(1, Math.round(Number(getValue(node, "canvas_width", 1280))));
-    const requestedCanvasH = Math.max(1, Math.round(Number(getValue(node, "canvas_height", 720))));
+    const requestedCanvasW = ceilDimension(getValue(node, "canvas_width", 1280));
+    const requestedCanvasH = ceilDimension(getValue(node, "canvas_height", 720));
     const layout = getProcessingLayout(node, requestedCanvasW, requestedCanvasH);
 
     const canvasW = layout.processingW;
