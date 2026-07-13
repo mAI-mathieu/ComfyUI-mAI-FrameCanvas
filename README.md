@@ -19,6 +19,7 @@ Main controls:
   - `keep_anchor`: keeps padding aligned with the selected anchor
   - `pad_right_bottom`: keeps content at the top-left and adds padding right/bottom
   - `pad_left_top`: adds padding left/top
+- `extra_padding_width`, `extra_padding_height`: optional processing-only padding, off by default. These values are added before the `processing_multiple` rounding step.
 - `target_width`, `target_height`: resized source frame size. There is no `resize_mode`; the node always uses target-size logic.
 - `anchor`: starting position logic inside the content canvas
 - `x_offset`, `y_offset`: reposition the frame sequence inside the content canvas
@@ -86,7 +87,7 @@ The entry file is `js/frame_canvas_recut.js`.
 The node now exposes both the requested final canvas and the safe processing canvas.
 
 - `final_canvas_width`, `final_canvas_height`: the exact user-defined canvas size, for example `728 × 90`.
-- `processing_canvas_width`, `processing_canvas_height`: the full safe canvas sent to the model, after `processing_multiple`, min size, and max size rules. For example `736 × 256`.
+- `processing_canvas_width`, `processing_canvas_height`: the full safe canvas sent to the model, after extra padding, `processing_multiple`, min size, and max size rules. For example `736 × 256`.
 - `crop_x`, `crop_y`, `crop_width`, `crop_height`: the crop box inside the processing canvas. Use this after generation to remove the padding and return to the original composition area.
 
 Typical post-process flow:

@@ -41,6 +41,8 @@ export function getProcessingLayout(node, requestedCanvasW, requestedCanvasH) {
     const minH = ceilDimension(getValue(node, "min_height", 512));
     const maxW = ceilDimension(getValue(node, "max_width", 2048));
     const maxH = ceilDimension(getValue(node, "max_height", 2048));
+    const extraPaddingW = Math.max(0, Math.ceil(Number(getValue(node, "extra_padding_width", 0))));
+    const extraPaddingH = Math.max(0, Math.ceil(Number(getValue(node, "extra_padding_height", 0))));
     const paddingStrategy = getValue(node, "padding_strategy", "centered");
 
     let contentW = ceilDimension(requestedCanvasW);
@@ -59,8 +61,10 @@ export function getProcessingLayout(node, requestedCanvasW, requestedCanvasH) {
     xOffset = Math.round(xOffset * scale);
     yOffset = Math.round(yOffset * scale);
 
-    let processingW = ceilToMultiple(Math.max(contentW, minW), multiple);
-    let processingH = ceilToMultiple(Math.max(contentH, minH), multiple);
+    const desiredProcessingW = Math.max(contentW, minW) + extraPaddingW;
+    const desiredProcessingH = Math.max(contentH, minH) + extraPaddingH;
+    let processingW = ceilToMultiple(desiredProcessingW, multiple);
+    let processingH = ceilToMultiple(desiredProcessingH, multiple);
     processingW = Math.min(processingW, maxAlignedW);
     processingH = Math.min(processingH, maxAlignedH);
 

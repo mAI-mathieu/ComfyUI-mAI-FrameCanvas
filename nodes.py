@@ -86,6 +86,18 @@ class MAIFrameCanvasRecut:
                     "pad_right_bottom",
                     "pad_left_top",
                 ], {"default": "centered"}),
+                "extra_padding_width": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 16384,
+                    "step": 1,
+                }),
+                "extra_padding_height": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 16384,
+                    "step": 1,
+                }),
 
                 "target_width": ("INT", {
                     "default": 1280,
@@ -225,6 +237,8 @@ class MAIFrameCanvasRecut:
         max_width,
         max_height,
         padding_strategy,
+        extra_padding_width=0,
+        extra_padding_height=0,
     ):
         canvas_w = self._ceil_dimension(canvas_w)
         canvas_h = self._ceil_dimension(canvas_h)
@@ -235,6 +249,8 @@ class MAIFrameCanvasRecut:
         min_height = self._ceil_dimension(min_height)
         max_width = self._ceil_dimension(max_width)
         max_height = self._ceil_dimension(max_height)
+        extra_padding_width = max(0, int(math.ceil(float(extra_padding_width))))
+        extra_padding_height = max(0, int(math.ceil(float(extra_padding_height))))
 
         max_aligned_w = self._floor_to_multiple(max_width, processing_multiple)
         max_aligned_h = self._floor_to_multiple(max_height, processing_multiple)
@@ -252,8 +268,10 @@ class MAIFrameCanvasRecut:
         safe_x_offset = int(round(x_offset * scale))
         safe_y_offset = int(round(y_offset * scale))
 
-        processing_w = self._ceil_to_multiple(max(safe_canvas_w, min_width), processing_multiple)
-        processing_h = self._ceil_to_multiple(max(safe_canvas_h, min_height), processing_multiple)
+        desired_processing_w = max(safe_canvas_w, min_width) + extra_padding_width
+        desired_processing_h = max(safe_canvas_h, min_height) + extra_padding_height
+        processing_w = self._ceil_to_multiple(desired_processing_w, processing_multiple)
+        processing_h = self._ceil_to_multiple(desired_processing_h, processing_multiple)
         processing_w = min(processing_w, max_aligned_w)
         processing_h = min(processing_h, max_aligned_h)
 
@@ -591,6 +609,8 @@ class MAIFrameCanvasRecut:
         max_width,
         max_height,
         padding_strategy,
+        extra_padding_width,
+        extra_padding_height,
         target_width,
         target_height,
         anchor,
@@ -624,6 +644,8 @@ class MAIFrameCanvasRecut:
             max_width=max_width,
             max_height=max_height,
             padding_strategy=padding_strategy,
+            extra_padding_width=extra_padding_width,
+            extra_padding_height=extra_padding_height,
         )
 
         canvas_w = layout["processing_w"]

@@ -57,6 +57,32 @@ class FrameCanvasRecutLayoutTests(unittest.TestCase):
         self.assertEqual(layout["target_w"], 513)
         self.assertEqual(layout["target_h"], 257)
 
+    def test_extra_padding_is_added_before_multiple_calculation(self):
+        node = MAIFrameCanvasRecut()
+
+        layout = node._get_processing_layout(
+            canvas_w=96,
+            canvas_h=64,
+            target_w=96,
+            target_h=64,
+            x_offset=0,
+            y_offset=0,
+            anchor="top_left",
+            processing_multiple=32,
+            min_width=1,
+            min_height=1,
+            max_width=2048,
+            max_height=2048,
+            padding_strategy="pad_right_bottom",
+            extra_padding_width=1,
+            extra_padding_height=33,
+        )
+
+        self.assertEqual(layout["content_w"], 96)
+        self.assertEqual(layout["content_h"], 64)
+        self.assertEqual(layout["processing_w"], 128)
+        self.assertEqual(layout["processing_h"], 128)
+
 
 if __name__ == "__main__":
     unittest.main()
